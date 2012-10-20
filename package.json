@@ -1,0 +1,10 @@
+{
+  "name"          : "die",
+  "description"   : "JavaScript templating.",
+  "homepage"      : "http://",
+  "keywords"      : ["template", "templating", "server", "client", "browser"],
+  "author"        : "Eddie Hillenbrand <eh88@nau.edu>",
+  "repository"    : {"type": "git", "url": "git://"},
+  "main"          : "die.js",
+  "version"       : "0.0.1"
+}
