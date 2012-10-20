@@ -171,7 +171,8 @@
   Die.templateSettings = {
     evaluate    : /<%([\s\S]+?)%>/g,
     interpolate : /<%=([\s\S]+?)%>/g,
-    escape      : /<%-([\s\S]+?)%>/g
+    escape      : /<%-([\s\S]+?)%>/g,
+    comment     : /<%#([\s\S]+?)%>/g
   };
 
   // When customizing `templateSettings`, if you don't want to define
@@ -202,6 +203,7 @@
 
     // Combine delimiters into one regular expression via alternation.
     var matcher = new RegExp([
+      (settings.comment || noMatch).source,
       (settings.escape || noMatch).source,
       (settings.interpolate || noMatch).source,
       (settings.evaluate || noMatch).source
@@ -211,10 +213,11 @@
     // appropriately.
     var index = 0;
     var source = "__p+='";
-    text.replace(matcher, function(match, esc, interp, eval, offset) {
+    text.replace(matcher, function(match, cmt, esc, interp, eval, offset) {
       source += text.slice(index, offset)
         .replace(escaper, function(match) { return '\\' + escapes[match]; });
       source +=
+        cmt ? '' :
         esc ? "'+\n((__t=(" + esc + "))==null?'':Die.escape(__t))+\n'" :
         interp ? "'+\n((__t=(" + interp + "))==null?'':__t)+\n'" :
         eval ? "';\n" + eval + "\n__p+='" : '';

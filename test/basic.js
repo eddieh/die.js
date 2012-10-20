@@ -21,6 +21,22 @@ $(document).ready(function() {
 
   });
 
+  test("comments", function () {
+    var basicComment = Die.template("<%# you don't see me %> hopefully true");
+    var result = basicComment();
+    equal(result, " hopefully true", 'basic comment ignored properly');
+
+    var commentInterpolate = Die.template("<%#= thing %> is getting to me");
+    equal(commentInterpolate({thing: 'This'}),
+          " is getting to me", 'comment short circuts interpolate tag');
+
+    var commentWrapsTag =
+          Die.template("<%# <%= thing %> is just not there %>");
+    equal(commentWrapsTag({thing: 'This'}),
+          "", 'comment wraps a tag');
+
+  });
+
   test("Die.escape", function() {
     equal(Die.escape("Curly & Moe"), "Curly &amp; Moe");
     equal(Die.escape("Curly &amp; Moe"), "Curly &amp;amp; Moe");

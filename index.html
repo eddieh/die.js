@@ -110,6 +110,20 @@ Die.template("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'dat
   JST.project = <%= Die.template(jstText).source %>;
 &lt;/script&gt;</pre>
 
+
+  <h2>Recognized Tags</h2>
+  <p>
+    Die recognizes the following template tags and converts them based
+    on the rules below:
+  </p>
+
+<pre class="">
+<% JavaScript statement -- inline with output %>
+<%= JavaScript expression -- replace with result %>
+<%- JavaScript expression -- replace with HTML-escaped result %>
+<%# comment -- ignored %>
+</pre>
+
 <script src="vendor/google-code-prettify/prettify.js"></script>
 <script>
   // make code pretty
