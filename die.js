@@ -166,19 +166,31 @@
   // Templates
   // ---------
 
-  // By default, Die uses ERB-style template delimiters, change
-  // the following template settings to use alternative delimiters.
+  // By default, Die uses ERB-style template delimiters, change the
+  // following template settings to use alternative delimiters. Each
+  // delimiter must be specified. Evaluate, interpolate, escape, and
+  // comment are begin delimiters, while end terminates each of the
+  // tags.
   Die.templateSettings = {
-    evaluate    : /<%([\s\S]+?)%>/g,
-    interpolate : /<%=([\s\S]+?)%>/g,
-    escape      : /<%-([\s\S]+?)%>/g,
-    comment     : /<%#([\s\S]+?)%>/g
+    evaluate    : '<%',
+    interpolate : '<%=',
+    escape      : '<%-',
+    comment     : '<%#',
+    end         : '%>'
   };
 
-  // When customizing `templateSettings`, if you don't want to define
-  // an interpolation, evaluation or escaping regex, we need one that
-  // is guaranteed not to match.
-  var noMatch = /(.)^/;
+  var tokens = [
+    'TOKEN_EVALUATE',
+    'TOKEN_INTERPOLATE',
+    'TOKEN_ESCAPE',
+    'TOKEN_COMMENT',
+    'TOKEN_END'
+  ];
+  for (var i = 0; i < tokens.length; i++ ) {
+    Die[tokens[i]] = i;
+  }
+
+  var tagDelimiters = {};
 
   // Certain characters need to be escaped so that they can be put
   // into a string literal.
@@ -191,42 +203,138 @@
     '\u2028': 'u2028',
     '\u2029': 'u2029'
   };
-
   var escaper = /\\|'|\r|\n|\t|\u2028|\u2029/g;
 
-  // JavaScript micro-templating, similar to John Resig's
-  // implementation.  Die templating handles arbitrary delimiters,
+  // Die templating handles arbitrary delimiters,
   // preserves whitespace, and correctly escapes quotes within
   // interpolated code.
-  Die.template = function(text, data, settings) {
+  Die.compile = function(text, data, settings) {
     settings = defaults({}, settings, Die.templateSettings);
 
-    // Combine delimiters into one regular expression via alternation.
-    var matcher = new RegExp([
-      (settings.comment || noMatch).source,
-      (settings.escape || noMatch).source,
-      (settings.interpolate || noMatch).source,
-      (settings.evaluate || noMatch).source
-    ].join('|') + '|$', 'g');
+    tagDelimiters[settings.evaluate] = Die.TOKEN_EVALUATE;
+    tagDelimiters[settings.interpolate] = Die.TOKEN_INTERPOLATE;
+    tagDelimiters[settings.escape] = Die.TOKEN_ESCAPE;
+    tagDelimiters[settings.comment] = Die.TOKEN_COMMENT;
+    tagDelimiters[settings.end] = Die.TOKEN_END;
+
+    var SPACE = 32,
+        TAB = 9,
+        NEWLINE = 10;
+
+    var delimiters = keys(tagDelimiters);
+    function parse(text, callback) {
+      var idx = 0,
+          line = 1,
+          col = 1,
+          ch = '',
+          buffer = '',
+          delimiterStack = [];
+
+      while (true) {
+        ch = text.charCodeAt(idx);
+
+        if (!ch) {
+          typeof callback === 'function' && callback(
+            '',
+            undefined, undefined, undefined, undefined,
+            idx);
+          return;
+        }
+
+        buffer += text[idx];
+
+        if (ch == SPACE || ch == TAB) {
+          idx++;
+          col++;
+          continue;
+        }
+
+        if (ch == NEWLINE) {
+          idx++;
+          line++;
+          col = 1;
+          continue;
+        }
+
+        for (var i = 0; i < delimiters.length; i++) {
+          var d = delimiters[i];
+
+          if (buffer.length >= d.length) {
+            var possibleDelimiter = buffer.slice(-d.length);
+
+            if (possibleDelimiter == d) {
+              // unique delimiter match?
+              if (text.length >= idx + 1) {
+                possibleDelimiter += text[idx + 1];
+                if (possibleDelimiter in tagDelimiters) {
+                  break;
+                }
+              }
+
+              var delimiterType = tagDelimiters[d];
+              if (delimiterType == Die.TOKEN_END) {
+                if (delimiterStack.length == 0) {
+                  // TODO: displaying line number & column number
+                  // would be sweet
+                  throw new Error('End delimiter without begin?');
+                }
+
+                var last = delimiterStack.pop();
+                if (delimiterStack.length == 0) {
+                  var submatch = text.slice(last.offset + last.length,
+                                            idx + 1 - d.length);
+                  typeof callback === 'function' && callback(
+                    text.slice(last.offset, idx + 1),
+                    last.type == Die.TOKEN_COMMENT ? submatch : undefined,
+                    last.type == Die.TOKEN_ESCAPE ? submatch : undefined,
+                    last.type == Die.TOKEN_INTERPOLATE ? submatch : undefined,
+                    last.type == Die.TOKEN_EVALUATE ? submatch : undefined,
+                    last.offset);
+                }
+              } else {
+                delimiterStack.push({
+                  type: delimiterType,
+                  content: d.slice(),
+                  line: line,
+                  col: col,
+                  offset: idx + 1 - d.length,
+                  length: d.length
+                });
+              }
+              buffer = '';
+            }
+          }
+        }
+
+        idx++;
+      }
+    }
 
     // Compile the template source, escaping string literals
     // appropriately.
     var index = 0;
     var source = "__p+='";
-    text.replace(matcher, function(match, cmt, esc, interp, eval, offset) {
-      source += text.slice(index, offset)
-        .replace(escaper, function(match) { return '\\' + escapes[match]; });
+    parse(text, function(match, cmt, esc, interp, eval, offset) {
+      // copy from the end of the last match up to the begining of
+      // this match, this is the static text withing the template
+      source += text.slice(index, offset).replace(escaper, function(m) {
+        return '\\' + escapes[m];
+      });
+
+      // copy the significant portion of the match (the body of the
+      // tag), this is JavaScript code to be executed, or a comment
       source +=
         cmt ? '' :
         esc ? "'+\n((__t=(" + esc + "))==null?'':Die.escape(__t))+\n'" :
         interp ? "'+\n((__t=(" + interp + "))==null?'':__t)+\n'" :
         eval ? "';\n" + eval + "\n__p+='" : '';
+
       index = offset + match.length;
     });
     source += "';\n";
 
     // If a variable is not specified, place data values in local
-    // scope.
+    // scope using 'with'
     if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
 
     source = "var __t,__p='',__j=Array.prototype.join," +

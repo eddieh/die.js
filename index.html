@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Die</title>
+  <title>Die.js</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
   <meta name="author" content="">
@@ -10,17 +10,19 @@
 </head>
 
 <body>
-  <h1>Die</h1>
+  <h1>Die.js</h1>
   <p>
-    Die is a amalgamation
+    Die.js is a amalgamation
     of <a href="http://en.wikipedia.org/wiki/ERuby">eRuby</a>
     and <a href="http://jinja.pocoo.org/">Jinja</a> templates. The
     implementation of the templating engine is derived from
-    Underscore.js, but features from Jinja such as template
-    inheritance, blocks, includes, and macros.
+    <a href="http://underscorejs.org/">Underscore.js</a>, but provides
+    features from Jinja such as template inheritance, blocks,
+    includes, and macros.
   </p>
 
-  <h2 class="sig">Die.template(templateString, [data], [settings])</h2>
+
+  <h2 class="sig">Die.compile(templateString, [data], [settings])</h2>
   <p>
     Compiles JavaScript templates into functions that can be evaluated
     for rendering. Useful for rendering complicated bits of HTML from
@@ -28,29 +30,48 @@
     variables, using <tt>&lt;%= &hellip; %&gt;</tt>, as well as
     execute arbitrary JavaScript code, with <tt>&lt;% &hellip;
     %&gt;</tt>. If you wish to interpolate a value, and have it be
-    HTML-escaped, use <tt>&lt;%- &hellip; %&gt;</tt> When you evaluate
-    a template function, pass in a <b>data</b> object that has
-    properties corresponding to the template's free variables. If
-    you're writing a one-off, you can pass the <b>data</b> object as
-    the second parameter to <b>template</b> in order to render
-    immediately instead of returning a template function.
-    The <b>settings</b> argument should be a hash containing
-    any <tt>Die.templateSettings</tt> that should be overridden.
+    HTML-escaped, use <tt>&lt;%- &hellip; %&gt;</tt>
+  </p>
+  <p>
+    When you evaluate a template function, pass in a <b>data</b>
+    object that has properties corresponding to the template's free
+    variables. If you're writing a one-off, you can pass
+    the <b>data</b> object as the second parameter to <b>template</b>
+    in order to render immediately instead of returning a template
+    function.  The <b>settings</b> argument should be a hash
+    containing any <tt>Die.templateSettings</tt> that should be
+    overridden.
   </p>
 
 <pre class="prettyprint linenums language-js">
-var compiled = Die.template("hello: &lt;%= name %&gt;");
-compiled({name : 'moe'});
+var template = Die.compile("hello: &lt;%= name %&gt;");
+template({name : 'moe'});
 =&gt; "hello: moe"
 
 var list = "&lt;% Die.each(people, function(name) { %&gt; &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt; &lt;% }); %&gt;";
-Die.template(list, {people : ['moe', 'curly', 'larry']});
+Die.compile(list, {people : ['moe', 'curly', 'larry']});
 =&gt; "&lt;li&gt;moe&lt;/li&gt;&lt;li&gt;curly&lt;/li&gt;&lt;li&gt;larry&lt;/li&gt;"
 
-var template = Die.template("&lt;b&gt;&lt;%- value %&gt;&lt;/b&gt;");
+var template = Die.compile("&lt;b&gt;&lt;%- value %&gt;&lt;/b&gt;");
 template({value : '&lt;script&gt;'});
 =&gt; "&lt;b&gt;&amp;lt;script&amp;gt;&lt;/b&gt;"</pre>
 
+
+  <h2>Recognized Tags</h2>
+  <p>
+    Die.js recognizes the following template tags and converts them based
+    on the rules below:
+  </p>
+
+<pre class="">
+<% JavaScript statement -- inline with output %>
+<%= JavaScript expression -- replace with result %>
+<%- JavaScript expression -- replace with HTML-escaped result %>
+<%# comment -- ignored %>
+</pre>
+
+
+  <h2>Template Functions</h2>
   <p>
     You can also use <tt>print</tt> from within JavaScript code.
     This is sometimes more convenient than using <tt>&lt;%=
@@ -58,33 +79,12 @@ template({value : '&lt;script&gt;'});
   </p>
 
 <pre class="prettyprint linenums language-js">
-var compiled = Die.template("&lt;% print('Hello ' + epithet); %&gt;");
-compiled({epithet: "stooge"});
+var template = Die.compile("&lt;% print('Hello ' + epithet); %&gt;");
+template({epithet: "stooge"});
 =&gt; "Hello stooge."</pre>
 
-  <p>
-    If eRuby-style delimiters aren't your cup of tea, you can change
-    Underscore's template settings to use different symbols to set
-    off interpolated code.  Define an <b>interpolate</b> regex to
-    match expressions that should be interpolated verbatim,
-    an <b>escape</b> regex to match expressions that should be
-    inserted after being HTML escaped, and an <b>evaluate</b>
-    regex to match expressions that should be evaluated without
-    insertion into the resulting string. You may define or omit
-    any combination of the three.  For example, to perform
-    <a href="http://github.com/janl/mustache.js#readme">Mustache.js</a>
-    style templating:
-  </p>
 
-<pre class="prettyprint linenums language-js">
-Die.templateSettings = {
-  interpolate : /\{\{(.+?)\}\}/g
-};
-
-var template = Die.template("Hello {{ name }}!");
-template({name : "Mustache"});
-=&gt; "Hello Mustache!"</pre>
-
+  <h2>Variable Scope </h2>
   <p>
     By default, <b>template</b> places the values from your data
     in the local scope via the <tt>with</tt> statement.  However,
@@ -94,9 +94,11 @@ template({name : "Mustache"});
   </p>
 
 <pre class="prettyprint linenums language-js">
-Die.template("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'data'});
+Die.compile("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'data'});
 =&gt; "Using 'with': no"</pre>
 
+
+  <h2>Precompilation</h2>
   <p>
     Precompiling your templates can be a big help when debugging
     errors you can't reproduce.  This is because precompiled
@@ -107,22 +109,34 @@ Die.template("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'dat
   </p>
 
 <pre class="prettyprint linenums language-js">&lt;script&gt;
-  JST.project = <%= Die.template(jstText).source %>;
+  JST.project = <%= Die.compile(jstText).source %>;
 &lt;/script&gt;</pre>
 
 
-  <h2>Recognized Tags</h2>
+  <h2>Changing Delimiters</h2>
   <p>
-    Die recognizes the following template tags and converts them based
-    on the rules below:
+    If eRuby-style delimiters aren't your cup of tea, you can change
+    Die's template settings to use different symbols to set off
+    interpolated code.  Define an <b>interpolate</b> regex to match
+    expressions that should be interpolated verbatim, an <b>escape</b>
+    regex to match expressions that should be inserted after being
+    HTML escaped, and an <b>evaluate</b> regex to match expressions
+    that should be evaluated without insertion into the resulting
+    string. You may define or omit any combination of the three.  For
+    example, to perform
+    <a href="http://github.com/janl/mustache.js#readme">Mustache.js</a>
+    style templating:
   </p>
 
-<pre class="">
-<% JavaScript statement -- inline with output %>
-<%= JavaScript expression -- replace with result %>
-<%- JavaScript expression -- replace with HTML-escaped result %>
-<%# comment -- ignored %>
-</pre>
+<pre class="prettyprint linenums language-js">
+Die.templateSettings = {
+  interpolate : /\{\{(.+?)\}\}/g
+};
+
+var template = Die.compile("Hello {{ name }}!");
+template({name : "Mustache"});
+=&gt; "Hello Mustache!"</pre>
+
 
 <script src="vendor/google-code-prettify/prettify.js"></script>
 <script>
