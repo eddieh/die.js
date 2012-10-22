@@ -171,7 +171,7 @@
   // delimiter must be specified. Evaluate, interpolate, escape, and
   // comment are begin delimiters, while end terminates each of the
   // tags.
-  Die.templateSettings = {
+  Die.settings = {
     evaluate    : '<%',
     interpolate : '<%=',
     escape      : '<%-',
@@ -208,8 +208,8 @@
   // Die templating handles arbitrary delimiters,
   // preserves whitespace, and correctly escapes quotes within
   // interpolated code.
-  Die.compile = function(text, data, settings) {
-    settings = defaults({}, settings, Die.templateSettings);
+  Die.compile = function(text, name, settings) {
+    settings = defaults({}, settings, Die.settings);
 
     tagDelimiters[settings.evaluate] = Die.TOKEN_EVALUATE;
     tagDelimiters[settings.interpolate] = Die.TOKEN_INTERPOLATE;
@@ -313,10 +313,62 @@
     // Compile the template source, escaping string literals
     // appropriately.
     var index = 0;
-    var source = "__p+='";
+    var extCounter = 1;
+    var next = '1';
+    var prev = '';
+    var source = "var __t," +
+          "__p=''," +
+          "__j=Array.prototype.join," +
+          "print=function(){__p+=__j.call(arguments,'');};\n" +
+          "with(obj || {}){\n" +
+          "//__EXTENSION\n" +
+          "__p+='";
+    var extTail = null;
+    function preprocess(text) {
+      var builtins = {
+        'extends': /extends\s*\(\s*"([\s\S]+?)"\s*\)/g,
+        'super': /(super\s*\(\s*\))/,
+        'block': /block\s*\(\s*"([\s\S]+?)"\s*\)/g,
+        'end': /end\s*\(\s*"([\s\S]+?)"\s*\)/g
+      };
+      var matcher = new RegExp([
+        builtins['extends'].source,
+        builtins['super'].source,
+        builtins['block'].source,
+        builtins['end'].source
+      ].join('|') + '|$', 'g');
+      var _index = 0;
+      var _source ='';
+      text.replace(matcher, function(match, ext, sup, blk, end, offset) {
+        _source += text.slice(_index, offset);
+        // .replace(escaper, function(m) {
+        //   return '\\' + escapes[m];
+        // });
+
+        if (ext) {
+          var tmp = Die.sourceOf(ext).split('//__EXTENSION');
+          source = tmp[0];
+          extTail = tmp[1];
+          prev = next;
+          extCounter++;
+          next = '' + extCounter;
+        }
+
+        _source +=
+          sup ? "_super()" :
+          blk ? ("function __" + blk + prev +"(_super) {\n" +
+                "var t__,__p='';") :
+          end ? ("return __p;}\n" +
+                "__p+=typeof __" + end + next + " === 'function' ? __" +
+                 end + next + "(__" + end + prev + ") : ''") : '';
+
+        _index = offset + match.length;
+      });
+      return _source;
+    }
     parse(text, function(match, cmt, esc, interp, eval, offset) {
       // copy from the end of the last match up to the begining of
-      // this match, this is the static text withing the template
+      // this match, this is the static text within the template
       source += text.slice(index, offset).replace(escaper, function(m) {
         return '\\' + escapes[m];
       });
@@ -327,39 +379,42 @@
         cmt ? '' :
         esc ? "'+\n((__t=(" + esc + "))==null?'':Die.escape(__t))+\n'" :
         interp ? "'+\n((__t=(" + interp + "))==null?'':__t)+\n'" :
-        eval ? "';\n" + eval + "\n__p+='" : '';
+        eval ? "';\n" + preprocess(eval) + "\n__p+='" : '';
 
       index = offset + match.length;
     });
-    source += "';\n";
-
-    // If a variable is not specified, place data values in local
-    // scope using 'with'
-    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
-
-    source = "var __t,__p='',__j=Array.prototype.join," +
-      "print=function(){__p+=__j.call(arguments,'');};\n" +
-      source + "return __p;\n";
+    if (extTail) source += "';\n" + extTail;
+    else source += "';\n}return __p;\n";
+    extTail = null;
 
     try {
-      var render = new Function(settings.variable || 'obj', '_', source);
+      var render = new Function('obj', "Die", source);
     } catch (e) {
       e.source = source;
       throw e;
     }
 
-    if (data) return render(data, Die);
     var template = function(data) {
       return render.call(this, data, Die);
     };
 
     // Provide the compiled function source as a convenience for
     // precompilation.
-    template.source = 'function(' + (settings.variable || 'obj') + '){\n' +
-      source +
-    '}';
+    //template.source = 'function(obj){\n' + source + '}';
+    template.source = source;
+
+    if (name) {
+      if (!Die.Environment) Die.Environment = {};
+      Die.Environment[name] = template;
+    }
 
     return template;
   };
+
+  Die.sourceOf = function (name) {
+    if (name in Die.Environment) return Die.Environment[name].source;
+    // TODO: should throw error
+    return false;
+  }
 
 }).call(this);

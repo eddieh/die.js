@@ -35,22 +35,13 @@
   <p>
     When you evaluate a template function, pass in a <b>data</b>
     object that has properties corresponding to the template's free
-    variables. If you're writing a one-off, you can pass
-    the <b>data</b> object as the second parameter to <b>template</b>
-    in order to render immediately instead of returning a template
-    function.  The <b>settings</b> argument should be a hash
-    containing any <tt>Die.templateSettings</tt> that should be
-    overridden.
+    variables.
   </p>
 
 <pre class="prettyprint linenums language-js">
 var template = Die.compile("hello: &lt;%= name %&gt;");
 template({name : 'moe'});
 =&gt; "hello: moe"
-
-var list = "&lt;% Die.each(people, function(name) { %&gt; &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt; &lt;% }); %&gt;";
-Die.compile(list, {people : ['moe', 'curly', 'larry']});
-=&gt; "&lt;li&gt;moe&lt;/li&gt;&lt;li&gt;curly&lt;/li&gt;&lt;li&gt;larry&lt;/li&gt;"
 
 var template = Die.compile("&lt;b&gt;&lt;%- value %&gt;&lt;/b&gt;");
 template({value : '&lt;script&gt;'});
@@ -83,6 +74,75 @@ var template = Die.compile("&lt;% print('Hello ' + epithet); %&gt;");
 template({epithet: "stooge"});
 =&gt; "Hello stooge."</pre>
 
+  <h2>Template Inheritance</h2>
+  <p>
+
+  </p>
+
+<pre class="prettyprint linenums language-html">
+<% block("content") %><% end("content") %>
+</pre>
+
+<pre class="prettyprint linenums language-html">
+<% extends("base.html") %>
+<% block("content") %>Hello<% end("content") %>
+</pre>
+
+<pre class="prettyprint linenums language-html">
+&lt;html&gt;
+&lt;head&gt;
+    &lt;% block("head") %&gt;
+    &lt;link rel="stylesheet" href="style.css" /&gt;
+    &lt;title&gt;
+        &lt;% block("title") %&gt;&lt;% end("title") %&gt; - Site
+    &lt;/title&gt;
+    &lt;% end("head") %&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="content"&gt;
+        &lt;% block("content") %&gt;&lt;% end("content") %&gt;
+    &lt;/div&gt;
+    &lt;div id="footer"&gt;
+        &lt;% block("footer") %&gt;
+        &amp;copy; Copyright 2008
+        &lt;% end("footer") %&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<pre class="prettyprint linenums language-html">
+&lt;% extends("base.html") %&gt;
+&lt;% block("title") %&gt;Index&lt;% end("title") %&gt;
+&lt;% block("head") %&gt;
+    &lt;% super() %&gt;
+    &lt;style type="text/css"&gt;
+        .important { color: #336699; }
+    &lt;/style&gt;
+&lt;% end("head") %&gt;
+&lt;% block("content") %&gt;
+    &lt;h1&gt;Index&lt;/h1&gt;
+    &lt;p class="important"&gt;
+      Welcome on my awesome homepage.
+    &lt;/p&gt;
+&lt;% end("content") %&gt;
+</pre>
+
+  <h2>One-offs</h2>
+  <p>
+    If you're writing a one-off, you can pass
+    the <b>data</b> object as the second parameter to <b>template</b>
+    in order to render immediately instead of returning a template
+    function.  The <b>settings</b> argument should be a hash
+    containing any <tt>Die.settings</tt> that should be
+    overridden.
+  </p>
+
+<pre class="prettyprint linenums language-js">
+var list = "&lt;% Die.each(people, function(name) { %&gt; &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt; &lt;% }); %&gt;";
+Die.compile(list, {people : ['moe', 'curly', 'larry']});
+=&gt; "&lt;li&gt;moe&lt;/li&gt;&lt;li&gt;curly&lt;/li&gt;&lt;li&gt;larry&lt;/li&gt;"
+</pre>
 
   <h2>Variable Scope </h2>
   <p>
@@ -129,7 +189,7 @@ Die.compile("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'data
   </p>
 
 <pre class="prettyprint linenums language-js">
-Die.templateSettings = {
+Die.settings = {
   interpolate : /\{\{(.+?)\}\}/g
 };
 

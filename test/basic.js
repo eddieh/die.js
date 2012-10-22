@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var templateSettings;
+  var settings;
 
   module("Basic", {
 
@@ -12,11 +12,11 @@ $(document).ready(function() {
         }
         return obj;
       }
-      templateSettings = clone(Die.templateSettings);
+      settings = clone(Die.settings);
     },
 
     teardown: function() {
-      Die.templateSettings = templateSettings;
+      Die.settings = settings;
     }
 
   });
@@ -78,21 +78,6 @@ $(document).ready(function() {
     result = fancyTemplate({people : {moe : "Moe", larry : "Larry", curly : "Curly"}});
     equal(result, "<ul><li>Moe</li><li>Larry</li><li>Curly</li></ul>", 'can run arbitrary javascript in templates');
 
-    // var escapedCharsInJavascriptTemplate = Die.compile("<ul><% Die.each(numbers.split('\\n'), function(item) { %><li><%= item %></li><% }) %></ul>");
-    // result = escapedCharsInJavascriptTemplate({numbers: "one\ntwo\nthree\nfour"});
-    // equal(result, "<ul><li>one</li><li>two</li><li>three</li><li>four</li></ul>", 'Can use escaped characters (e.g. \\n) in Javascript');
-
-    // var namespaceCollisionTemplate = Die.compile("<%= pageCount %> <%= thumbnails[pageCount] %> <% Die.each(thumbnails, function(p) { %><div class=\"thumbnail\" rel=\"<%= p %>\"></div><% }); %>");
-    // result = namespaceCollisionTemplate({
-    //   pageCount: 3,
-    //   thumbnails: {
-    //     1: "p1-thumbnail.gif",
-    //     2: "p2-thumbnail.gif",
-    //     3: "p3-thumbnail.gif"
-    //   }
-    // });
-    // equal(result, "3 p3-thumbnail.gif <div class=\"thumbnail\" rel=\"p1-thumbnail.gif\"></div><div class=\"thumbnail\" rel=\"p2-thumbnail.gif\"></div><div class=\"thumbnail\" rel=\"p3-thumbnail.gif\"></div>");
-
     var noInterpolateTemplate = Die.compile("<div><p>Just some text. Hey, I know this is silly but it aids consistency.</p></div>");
     result = noInterpolateTemplate();
     equal(result, "<div><p>Just some text. Hey, I know this is silly but it aids consistency.</p></div>");
@@ -123,7 +108,7 @@ $(document).ready(function() {
       equal(fromHTML({data : 12345}).replace(/\s/g, ''), '<li>24690</li>');
     }
 
-    Die.templateSettings = {
+    Die.settings = {
       evaluate: '{{',
       interpolate: '{{=',
       escape: '{{-',
@@ -141,7 +126,7 @@ $(document).ready(function() {
     var quoteInStatementAndBody = Die.compile("{{ if(foo == 'bar'){ }}Statement quotes and 'quotes'.{{ } }}");
     equal(quoteInStatementAndBody({foo: "bar"}), "Statement quotes and 'quotes'.");
 
-    Die.templateSettings = {
+    Die.settings = {
       evaluate: '<?',
       interpolate: '<?=',
       escape: '<?-',
@@ -159,7 +144,7 @@ $(document).ready(function() {
     var quoteInStatementAndBody = Die.compile("<? if(foo == 'bar'){ ?>Statement quotes and 'quotes'.<? } ?>");
     equal(quoteInStatementAndBody({foo: "bar"}), "Statement quotes and 'quotes'.");
 
-    Die.templateSettings = {
+    Die.settings = {
       evaluate: '{{#',
       interpolate: '{{',
       escape: '{{-',
@@ -185,20 +170,6 @@ $(document).ready(function() {
   test('Die.compile handles \\u2028 & \\u2029', function() {
     var tmpl = Die.compile('<p>\u2028<%= "\\u2028\\u2029" %>\u2029</p>');
     strictEqual(tmpl(), '<p>\u2028\u2028\u2029\u2029</p>');
-  });
-
-  test('Die.compileSettings.variable', function() {
-    var s = '<%=data.x%>';
-    var data = {x: 'x'};
-    strictEqual(Die.compile(s, data, {variable: 'data'}), 'x');
-    Die.templateSettings.variable = 'data';
-    strictEqual(Die.compile(s)(data), 'x');
-  });
-
-  test('#547 - Die.templateSettings is unchanged by custom settings.', function() {
-    ok(!Die.templateSettings.variable);
-    Die.compile('', {}, {variable: 'x'});
-    ok(!Die.templateSettings.variable);
   });
 
   test('#556 - undefined template variables.', function() {
@@ -229,15 +200,44 @@ $(document).ready(function() {
     templateEscaped({f: function(){ ok(!(countEscaped++)); }});
   });
 
-  test('#746 - Die.compile settings are not modified.', 1, function() {
-    var settings = {};
-    Die.compile('', null, settings);
-    deepEqual(settings, {});
-  });
+  // var escapedCharsInJavascriptTemplate = Die.compile("<ul><% Die.each(numbers.split('\\n'), function(item) { %><li><%= item %></li><% }) %></ul>");
+  // result = escapedCharsInJavascriptTemplate({numbers: "one\ntwo\nthree\nfour"});
+  // equal(result, "<ul><li>one</li><li>two</li><li>three</li><li>four</li></ul>", 'Can use escaped characters (e.g. \\n) in Javascript');
 
-  test('#779 - delimeters are applied to unescaped text.', 1, function() {
-    var template = Die.compile('<<\nx\n>>', null, {evaluate: /<<(.*?)>>/g});
-    strictEqual(template(), '<<\nx\n>>');
-  });
+  // var namespaceCollisionTemplate = Die.compile("<%= pageCount %> <%= thumbnails[pageCount] %> <% Die.each(thumbnails, function(p) { %><div class=\"thumbnail\" rel=\"<%= p %>\"></div><% }); %>");
+  // result = namespaceCollisionTemplate({
+  //   pageCount: 3,
+  //   thumbnails: {
+  //     1: "p1-thumbnail.gif",
+  //     2: "p2-thumbnail.gif",
+  //     3: "p3-thumbnail.gif"
+  //   }
+  // });
+  // equal(result, "3 p3-thumbnail.gif <div class=\"thumbnail\" rel=\"p1-thumbnail.gif\"></div><div class=\"thumbnail\" rel=\"p2-thumbnail.gif\"></div><div class=\"thumbnail\" rel=\"p3-thumbnail.gif\"></div>");
+
+  // test('Die.settings.variable', function() {
+  //   var s = '<%=data.x%>';
+  //   var data = {x: 'x'};
+  //   strictEqual(Die.compile(s, data, {variable: 'data'}), 'x');
+  //   Die.settings.variable = 'data';
+  //   strictEqual(Die.compile(s)(data), 'x');
+  // });
+
+  // test('#547 - Die.settings is unchanged by custom settings.', function() {
+  //   ok(!Die.settings.variable);
+  //   Die.compile('', {}, {variable: 'x'});
+  //   ok(!Die.settings.variable);
+  // });
+
+  // test('#746 - Die.compile settings are not modified.', 1, function() {
+  //   var settings = {};
+  //   Die.compile('', null, settings);
+  //   deepEqual(settings, {});
+  // });
+
+  // test('#779 - delimeters are applied to unescaped text.', 1, function() {
+  //   var template = Die.compile('<<\nx\n>>', null, {evaluate: /<<(.*?)>>/g});
+  //   strictEqual(template(), '<<\nx\n>>');
+  // });
 
 });
