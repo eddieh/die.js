@@ -314,8 +314,8 @@
     // appropriately.
     var index = 0;
     var extCounter = 1;
-    var next = '1';
-    var prev = '';
+    var cur = '$1';
+    var blkStack = [];
     var source = "var __t," +
           "__p=''," +
           "__j=Array.prototype.join," +
@@ -349,18 +349,32 @@
           var tmp = Die.sourceOf(ext).split('//__EXTENSION');
           source = tmp[0];
           extTail = tmp[1];
-          prev = next;
           extCounter++;
-          next = '' + extCounter;
+          cur = '$' + extCounter;
         }
 
+        function _super(n) {
+          if (blkStack.length == 0)
+            throw Error("Can't call super outside of block.");
+          var blk = blkStack.pop();
+          blkStack.push(blk);
+          function __super(prev) {
+            if (prev == 0) return '"";';
+            return "typeof __" + blk + "$" +  prev + "==='function'?__" + blk + "$" + prev + "():" + __super(prev - 1);
+          }
+          return __super(n - 1);
+        }
+
+        if (blk) blkStack.push(blk);
+        if (end) blkStack.pop();
+
         _source +=
-          sup ? "_super()" :
-          blk ? ("function __" + blk + prev +"(_super) {\n" +
+          sup ? "__p+=" + _super(extCounter) :
+          blk ? ("function __" + blk + cur +"() {\n" +
                 "var t__,__p='';") :
           end ? ("return __p;}\n" +
-                "__p+=typeof __" + end + next + " === 'function' ? __" +
-                 end + next + "(__" + end + prev + ") : ''") : '';
+                 "var __" + end + "$entry=!__" + end +"$entry?__" + end + cur +":__" + end + "$entry;\n" +
+                 "__p+=" + extCounter + "==1?__" + end + "$entry():'';") : '';
 
         _index = offset + match.length;
       });

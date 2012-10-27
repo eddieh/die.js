@@ -76,17 +76,18 @@ template({epithet: "stooge"});
 
   <h2>Template Inheritance</h2>
   <p>
-
+    Template inheritance allows you to build a base "skeleton"
+    template that contains all the common elements for some set of
+    templates. The base template defines <em>blocks</em> that child
+    templates can override.
   </p>
 
-<pre class="prettyprint linenums language-html">
-<% block("content") %><% end("content") %>
-</pre>
-
-<pre class="prettyprint linenums language-html">
-<% extends("base.html") %>
-<% block("content") %>Hello<% end("content") %>
-</pre>
+<pre class="prettyprint linenums language-js">
+Die.compile('&lt;% block("content") %&gt;&lt;% end("content") %&gt;', 'base');
+var template = Die.compile('&lt;% extends("base") %&gt;' +
+                           '&lt;% block("content") %&gt;Hello&lt;% end("content") %&gt;');
+template();
+=&gt; "Hello"</pre>
 
 <pre class="prettyprint linenums language-html">
 &lt;html&gt;
@@ -126,6 +127,22 @@ template({epithet: "stooge"});
       Welcome on my awesome homepage.
     &lt;/p&gt;
 &lt;% end("content") %&gt;
+</pre>
+
+  <p>
+    A child template does not need to override all blocks defined in
+    the parent template. If a child doesn't define a block, the
+    content of the parent block is used without the need for calling
+    super.
+  </p>
+
+<pre class="prettyprint linenums language-js">
+Die.compile('<% block("b1" %>One<% block("b1") %> ' +
+            '<% block("b2" %><% block("b2") %>', 'base');
+var template = Dice.compile('<% extends("base") %>' +
+                            '<% block("b2") %>two<% block("b2") %>');
+template();
+=> "One two"
 </pre>
 
   <h2>One-offs</h2>
