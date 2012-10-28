@@ -15,12 +15,6 @@ h1 {
     letter-spacing: -1px;
     border-bottom: 1px solid #333;
 }
-h2.sig {
-    margin-bottom: 0;
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 24px;
-    font-weight: normal;
-}
 h2, h3, h4, h5, h6 { margin-bottom: 0 }
 h2 + p, h3 + p, h4 + p, h5 + p, h6 + p { margin-top: 0 }
 
@@ -151,4 +145,8 @@ blockquote small {
 #die {
     width: 300px;
     margin-left: 20px;
+}
+
+dl.method dt {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }

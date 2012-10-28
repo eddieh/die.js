@@ -186,11 +186,29 @@ template();
 
   <h3>Extends</h3>
   <p>
-
+    The <em>extends</em> tag can be used to extend a template from
+    another one.
   </p>
 
   <h3>Blocks</h3>
+  <p>
+    Blocks are used for inheritance and act as placeholders and
+    replacements at the same time.
+  </p>
+
   <h3>Super</h3>
+  <p>
+    It's possible to render the contents of the parent block by
+    calling super. This gives back the contents of the parent block:
+  </p>
+
+<pre class="prettyprint linenums language-html">
+&lt;% block("sidebar") %&gt;
+    &lt;h3&gt;Table Of Contents&lt;/h3&gt;
+    &hellip;
+    &lt;% super() %&gt;
+&lt;% end("sidebar") %&gt;
+</pre>
 
   <p>
     A child template does not need to override all blocks defined in
@@ -200,15 +218,15 @@ template();
   </p>
 
 <pre class="prettyprint linenums language-js">
-Die.compile('<% block("b1") %>One<% block("b1") %> ' +
-            '<% block("b2") %><% block("b2") %>', 'base');
+Die.compile('<% block("b1") %>One<% end("b1") %> ' +
+            '<% block("b2") %><% end("b2") %>', 'base');
 var template = Dice.compile('<% extends("base") %>' +
-                            '<% block("b2") %>two<% block("b2") %>');
+                            '<% block("b2") %>two<% end("b2") %>');
 template();
 => "One two"
 </pre>
 
-  <h2>One-offs</h2>
+  <h2><strike>One-offs</strike></h2>
   <p>
     If you're writing a one-off, you can pass
     the <b>data</b> object as the second parameter to <b>template</b>
@@ -219,12 +237,12 @@ template();
   </p>
 
 <pre class="prettyprint linenums language-js">
-var list = "&lt;% Die.each(people, function(name) { %&gt; &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt; &lt;% }); %&gt;";
+var list = "&lt;% _.each(people, function(name) { %&gt; &lt;li&gt;&lt;%= name %&gt;&lt;/li&gt; &lt;% }); %&gt;";
 Die.compile(list, {people : ['moe', 'curly', 'larry']});
 =&gt; "&lt;li&gt;moe&lt;/li&gt;&lt;li&gt;curly&lt;/li&gt;&lt;li&gt;larry&lt;/li&gt;"
 </pre>
 
-  <h2>Variable Scope </h2>
+  <h2><strike>Variable Scope</strike></h2>
   <p>
     By default, <b>template</b> places the values from your data
     in the local scope via the <tt>with</tt> statement.  However,
@@ -238,7 +256,7 @@ Die.compile("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'data
 =&gt; "Using 'with': no"</pre>
 
 
-  <h2>Precompilation</h2>
+  <h2><strike>Precompilation</strike></h2>
   <p>
     Precompiling your templates can be a big help when debugging
     errors you can't reproduce.  This is because precompiled
@@ -253,7 +271,7 @@ Die.compile("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'data
 &lt;/script&gt;</pre>
 
 
-  <h2>Changing Delimiters</h2>
+  <h2><strike>Changing Delimiters</strike></h2>
   <p>
     If eRuby-style delimiters aren't your cup of tea, you can change
     Die's template settings to use different symbols to set off
@@ -288,6 +306,86 @@ template({name : "Mustache"});
     <dt>Die.template(name)</dt>
     <dd></dd>
   </dl>
+
+  <h2>Acknowledgments</h2>
+  <p>
+    Portions of this project and its documentations are derived from
+    other projects and their documentations.
+  </p>
+
+  <p>
+    <a href="http://underscorejs.org/"><b>Underscore.js</b></a>
+    <small>
+      Copyright (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.<br />
+      MIT LICENSE
+
+      Permission is hereby granted, free of charge, to any person
+      obtaining a copy of this software and associated documentation
+      files (the "Software"), to deal in the Software without
+      restriction, including without limitation the rights to use,
+      copy, modify, merge, publish, distribute, sublicense, and/or
+      sell copies of the Software, and to permit persons to whom the
+      Software is furnished to do so, subject to the following
+      conditions:
+
+      The above copyright notice and this permission notice shall be
+      included in all copies or substantial portions of the Software.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+      OTHER DEALINGS IN THE SOFTWARE.
+    </small>
+  </p>
+
+  <p>
+    <a href="http://jinja.pocoo.org/"><b>Jinja2</b></a>
+    <small>
+      Copyright (c) 2009 by the Jinja Team, Some rights reserved.<br />
+      BSD LICENSE
+
+      Redistribution and use in source and binary forms, with or
+      without modification, are permitted provided that the following
+      conditions are met:
+
+      <ul>
+        <li>
+          Redistributions of source code must retain the above
+          copyright notice, this list of conditions and the following
+          disclaimer.
+        </li>
+        <li>
+          Redistributions in binary form must reproduce the above
+          copyright notice, this list of conditions and the following
+          disclaimer in the documentation and/or other materials
+          provided with the distribution.
+        </li>
+        <li>
+          The names of the contributors may not be used to endorse or
+          promote products derived from this software without specific
+          prior written permission.
+        </li>
+      </ul>
+
+      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+      CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+      INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+      MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+      DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+      CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+      SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+      LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+      USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+      AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+      LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+      IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+      THE POSSIBILITY OF SUCH DAMAGE.
+    </small>
+  </p>
 
 <script src="vendor/google-code-prettify/prettify.js"></script>
 <script>
