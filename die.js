@@ -316,6 +316,7 @@
     var extCounter = 1;
     var cur = '$1';
     var blkStack = [];
+    var blkDecls = 'var __r';
     var source = "var __t," +
           "__p=''," +
           "__j=Array.prototype.join," +
@@ -366,7 +367,10 @@
           return __super(n - 1);
         }
 
-        if (blk) blkStack.push(blk);
+        if (blk) {
+          blkStack.push(blk);
+          blkDecls += ",__" + blk + "$entry";
+        }
         if (end) blkStack.pop();
 
         _source +=
@@ -374,7 +378,7 @@
           blk ? ("function __" + blk + cur +"() {\n" +
                 "var t__,__p='';") :
           end ? ("return __p;}\n" +
-                 "var __" + end + "$entry=!__" + end +"$entry?__" + end + cur +":__" + end + "$entry;\n" +
+                 "__" + end + "$entry=!__" + end +"$entry?__" + end + cur +":__" + end + "$entry;\n" +
                  "__p+=" + extCounter + "==1?__" + end + "$entry():'';") : '';
 
         _index = offset + match.length;
@@ -401,8 +405,8 @@
 
       index = offset + match.length;
     });
-    if (extTail) source += "';\n" + extTail;
-    else source += "';\n}return __p;\n";
+    if (extTail) source += "';" + blkDecls + ";" + extTail;
+    else source += "';\n}" + blkDecls + ";return __p;\n";
     extTail = null;
 
     try {

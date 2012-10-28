@@ -177,4 +177,11 @@ $(document).ready(function() {
   });
 
   // nested blocks
+  test("Nested blocks", function () {
+    Die.compile('a<% block("b1") %>b<% block("n1") %>Y<% end("n1") %>c<% end("b1") %>d', 'base');
+    var template = Die.compile('<% extends("base") %>' +
+                               '<% block("n1") %>X<% end("n1") %>' +
+                               '<% block("b1") %><% super() %><% end("b1") %>');
+    equal(template(), "abXcd", "simple nested block");
+  });
 });
