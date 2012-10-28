@@ -11,27 +11,53 @@
 
 <body>
   <h1>Die.js</h1>
+
+  <blockquote id="die" class="pull-right">
+    <p>
+      Die (noun): a device for cutting or molding metal into a
+      particular shape. an engraved device for stamping a design on
+      coins or medals
+    </p>
+
+    <small>
+      <cite title="">
+        New Oxford American Dictionary 3rd edition &copy; 2010 by
+        Oxford University Press, Inc.
+      </cite>
+    </small>
+  </blockquote>
+
   <p>
     Die.js is a amalgamation
-    of <a href="http://en.wikipedia.org/wiki/ERuby">eRuby</a>
+    of <a href="http://en.wikipedia.org/wiki/ERuby">eRuby</a> (ERB)
     and <a href="http://jinja.pocoo.org/">Jinja</a> templates. The
-    implementation of the templating engine is derived from
-    <a href="http://underscorejs.org/">Underscore.js</a>, but provides
-    features from Jinja such as template inheritance, blocks,
+    implementation of the templating engine was originally derived
+    from <a href="http://underscorejs.org/">Underscore.js</a>, but
+    provides features from Jinja such as template inheritance, blocks,
     includes, and macros.
   </p>
 
-
-  <h2 class="sig">Die.compile(templateString, [data], [settings])</h2>
+  <h2>Introduction</h2>
   <p>
-    Compiles JavaScript templates into functions that can be evaluated
-    for rendering. Useful for rendering complicated bits of HTML from
-    JSON data sources. Template functions can both interpolate
-    variables, using <tt>&lt;%= &hellip; %&gt;</tt>, as well as
-    execute arbitrary JavaScript code, with <tt>&lt;% &hellip;
-    %&gt;</tt>. If you wish to interpolate a value, and have it be
-    HTML-escaped, use <tt>&lt;%- &hellip; %&gt;</tt>
+    Die compiles JavaScript templates into functions that can be
+    evaluated for rendering. Templates are usefule for rendering
+    complicated bits of HTML from JSON data sources. Template
+    functions can interpolate variables, using <tt>&lt;%= &hellip;
+    %&gt;</tt>, as well as execute arbitrary JavaScript code,
+    with <tt>&lt;% &hellip; %&gt;</tt>. If you wish to interpolate a
+    value, and have it be HTML-escaped, use <tt>&lt;%- &hellip;
+    %&gt;</tt>
   </p>
+
+  <p>
+    Templates are compiled by calling Die's <tt>compile</tt>
+    method. The first argument to <tt>compile</tt> is the template's
+    source, the second argument is an optional name that can later be
+    used to reference the compiled template. The method returns the
+    compiled template as a JavaScript function that takes an object as
+    an argument.
+  </p>
+
   <p>
     When you evaluate a template function, pass in a <b>data</b>
     object that has properties corresponding to the template's free
@@ -64,9 +90,9 @@ template({value : '&lt;script&gt;'});
 
   <h2>Template Functions</h2>
   <p>
-    You can also use <tt>print</tt> from within JavaScript code.
-    This is sometimes more convenient than using <tt>&lt;%=
-      ... %&gt;</tt>.
+    You can also use <tt>print</tt> from within JavaScript code.  This
+    is sometimes more convenient than using <tt>&lt;%= &hellip;
+    %&gt;</tt>.
   </p>
 
 <pre class="prettyprint linenums language-js">
@@ -88,6 +114,14 @@ var template = Die.compile('&lt;% extends("base") %&gt;' +
                            '&lt;% block("content") %&gt;Hello&lt;% end("content") %&gt;');
 template();
 =&gt; "Hello"</pre>
+
+  <h3>Base Template</h3>
+  <p>
+    This template, which we'll call 'base.html', defines a simple HTML
+    skeleton document that you might use for a simple two-column
+    page. It's the job of "child" templates to fill the empty blocks
+    with content:
+  </p>
 
 <pre class="prettyprint linenums language-html">
 &lt;html&gt;
@@ -112,6 +146,19 @@ template();
 &lt;/html&gt;
 </pre>
 
+  <p>
+    In this example, the <tt><% block("name") %></tt>
+    and <tt><% end("name") %></tt> tags define four blocks that child
+    templates can fill in. All the block tag does is to tell the
+    template engine that a child template may override those portions
+    of the template.
+  </p>
+
+  <h3>Child Template</h3>
+  <p>
+    A child template might look like this:
+  </p>
+
 <pre class="prettyprint linenums language-html">
 &lt;% extends("base.html") %&gt;
 &lt;% block("title") %&gt;Index&lt;% end("title") %&gt;
@@ -129,6 +176,14 @@ template();
 &lt;% end("content") %&gt;
 </pre>
 
+  <p>
+    The <tt><% extends("name") %></tt> tag is the key here. It tells
+    the template engine that this template "extends" another
+    template. When the template system evaluates this template, first
+    it locates the parent. The extends tag should be the first tag in
+    the template.
+  </p>
+
   <h3>Extends</h3>
   <p>
 
@@ -145,8 +200,8 @@ template();
   </p>
 
 <pre class="prettyprint linenums language-js">
-Die.compile('<% block("b1" %>One<% block("b1") %> ' +
-            '<% block("b2" %><% block("b2") %>', 'base');
+Die.compile('<% block("b1") %>One<% block("b1") %> ' +
+            '<% block("b2") %><% block("b2") %>', 'base');
 var template = Dice.compile('<% extends("base") %>' +
                             '<% block("b2") %>two<% block("b2") %>');
 template();
@@ -222,6 +277,17 @@ var template = Die.compile("Hello {{ name }}!");
 template({name : "Mustache"});
 =&gt; "Hello Mustache!"</pre>
 
+  <h2>API</h2>
+  This section describes all the public methods Die exposes.
+  <dl class="method">
+    <dt>Die.compile(templateString, [name], [settings])</dt>
+    <dd></dd>
+  </dl>
+
+  <dl class="method">
+    <dt>Die.template(name)</dt>
+    <dd></dd>
+  </dl>
 
 <script src="vendor/google-code-prettify/prettify.js"></script>
 <script>

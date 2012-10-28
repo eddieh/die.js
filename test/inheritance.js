@@ -184,4 +184,75 @@ $(document).ready(function() {
                                '<% block("b1") %><% super() %><% end("b1") %>');
     equal(template(), "abXcd", "simple nested block");
   });
+
+  test("Real world test", function () {
+    Die.compile(
+        '<html>\n' +
+        '<head>\n' +
+        '    <% block("head") %>\n' +
+        '    <link rel="stylesheet" href="style.css" />\n' +
+        '    <title>\n' +
+        '        <% block("title") %><% end("title") %> - Site\n' +
+        '    </title>\n' +
+        '    <% end("head") %>\n' +
+        '</head>\n' +
+        '<body>\n' +
+        '    <div id="content">\n' +
+        '        <% block("content") %><% end("content") %>\n' +
+        '    </div>\n' +
+        '    <div id="footer">\n' +
+        '        <% block("footer") %>\n' +
+        '        &copy; Copyright 2008\n' +
+        '        <% end("footer") %>\n' +
+        '    </div>\n' +
+        '</body>\n' +
+        '</html>', 'base.html');
+    var template = Die.compile(
+        '<% extends("base.html") %>\n' +
+        '<% block("title") %>Index<% end("title") %>\n' +
+        '<% block("head") %>\n' +
+        '    <% super() %>\n' +
+        '    <style type="text/css">\n' +
+        '        .important { color: #336699; }\n' +
+        '    </style>\n' +
+        '<% end("head") %>\n' +
+        '<% block("content") %>\n' +
+        '    <h1>Index</h1>\n' +
+        '    <p class="important">\n' +
+        '      Welcome on my awesome homepage.\n' +
+        '    </p>\n' +
+        '<% end("content") %>');
+    equal(template(),
+        '<html>\n' +
+        '<head>\n' +
+        '    \n' +
+        '    \n' +
+        '    <link rel="stylesheet" href="style.css" />\n' +
+        '    <title>\n' +
+        '        Index - Site\n' +
+        '    </title>\n' +
+        '    \n' +
+        '    <style type="text/css">\n' +
+        '        .important { color: #336699; }\n' +
+        '    </style>\n' +
+        '\n' +
+        '</head>\n' +
+        '<body>\n' +
+        '    <div id="content">\n' +
+        '        \n' +
+        '    <h1>Index</h1>\n' +
+        '    <p class="important">\n' +
+        '      Welcome on my awesome homepage.\n' +
+        '    </p>\n' +
+        '\n' +
+        '    </div>\n' +
+        '    <div id="footer">\n' +
+        '        \n' +
+        '        &copy; Copyright 2008\n' +
+        '        \n' +
+        '    </div>\n' +
+        '</body>\n' +
+        '</html>',
+        "real world test");
+  });
 });
