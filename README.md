@@ -1,4 +1,4 @@
-= Die.js
+# Die.js
 
 Die.js is a amalgamation of eRuby (ERB) and Jinja templates. The
 implementation of the templating engine was originally derived from
