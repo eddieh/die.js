@@ -346,10 +346,11 @@
         // });
 
         if (ext) {
-          var tmp = Die.sourceOf(ext).split('//__EXTENSION');
+          var template = Die.template(ext);
+          var tmp = template.source.split('//__EXTENSION');
           source = tmp[0];
           extTail = tmp[1];
-          extCounter++;
+          extCounter = template._ec + 1;
           cur = '$' + extCounter;
         }
 
@@ -381,11 +382,14 @@
       return _source;
     }
     parse(text, function(match, cmt, esc, interp, eval, offset) {
-      // copy from the end of the last match up to the begining of
-      // this match, this is the static text within the template
-      source += text.slice(index, offset).replace(escaper, function(m) {
-        return '\\' + escapes[m];
-      });
+      // ignore content outside of blocks in all but the root template
+      if (extCounter < 2 || blkStack.length != 0) {
+        // copy from the end of the last match up to the begining of
+        // this match, this is the static text within the template
+        source += text.slice(index, offset).replace(escaper, function(m) {
+          return '\\' + escapes[m];
+        });
+      }
 
       // copy the significant portion of the match (the body of the
       // tag), this is JavaScript code to be executed, or a comment
@@ -416,6 +420,7 @@
     // precompilation.
     //template.source = 'function(obj){\n' + source + '}';
     template.source = source;
+    template._ec = extCounter;
 
     if (name) {
       if (!Die.Environment) Die.Environment = {};
@@ -425,10 +430,10 @@
     return template;
   };
 
-  Die.sourceOf = function (name) {
-    if (name in Die.Environment) return Die.Environment[name].source;
+  Die.template = function (name) {
+    if (name in Die.Environment) return Die.Environment[name];
     // TODO: should throw error
     return false;
-  }
+  };
 
 }).call(this);
