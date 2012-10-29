@@ -1,6 +1,6 @@
 /* ==========================================================
  * die.js v0.0.1
- * http://...
+ * http://eddieh.bitbucket.org/diejs
  * ==========================================================
  * Copyright 2012 Eddie Hillenbrand
  *
@@ -68,7 +68,7 @@
   Die.VERSION = '0.0.1';
 
 
-  // Convinence functions
+  // Convenience functions
   // --------------------
 
   var nativeForEach      = Array.prototype.forEach,
@@ -388,7 +388,7 @@
     parse(text, function(match, cmt, esc, interp, eval, offset) {
       // ignore content outside of blocks in all but the root template
       if (extCounter < 2 || blkStack.length != 0) {
-        // copy from the end of the last match up to the begining of
+        // copy from the end of the last match up to the beginning of
         // this match, this is the static text within the template
         source += text.slice(index, offset).replace(escaper, function(m) {
           return '\\' + escapes[m];

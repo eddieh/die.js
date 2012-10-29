@@ -10,3 +10,7 @@ inheritance, blocks, includes, and macros.
     engraved device for stamping a design on coins or medals
     -- New Oxford American Dictionary 3rd edition © 2010 by Oxford
        University Press, Inc.
+
+## Links
+* Documentation: http://eddieh.bitbucket.org/diejs
+* Project: https://bitbucket.org/eddieh/die.js

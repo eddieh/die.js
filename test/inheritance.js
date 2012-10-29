@@ -93,7 +93,7 @@ $(document).ready(function() {
                                'base3');
     equal(template(),
           "3one 3two 3three",
-          "template takes content from last extention in chain to declare block");
+          "template takes content from last extension in chain to declare block");
 
     Die.compile('<% block("b1") %><% end("b1") %>' +
                 '<% block("b2") %><% end("b2") %>' +
@@ -113,7 +113,7 @@ $(document).ready(function() {
                                'base3');
     equal(template(),
           "3one 3two 3three",
-          "template takes content from last extention in chain to declare block and some child doesn't override a block");
+          "template takes content from last extension in chain to declare block and some child doesn't override a block");
 
     Die.compile('<% block("b1") %><% end("b1") %>' +
                 '<% block("b2") %> a <% end("b2") %>' +

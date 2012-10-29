@@ -37,16 +37,34 @@
     includes, and macros.
   </p>
 
+  <p>
+    <b>Note:</b> Die.js is incomplete. Template inheritance and blocks
+    have been implemented, but includes and macros are forthcoming.
+  </p>
+
+  <p>
+    The project
+    is <a href="https://bitbucket.org/eddieh/die.js">hosted on
+    BitBucket</a> in a Git repository.
+  </p>
+
+  <h2>Downloads</h2>
+  <p>
+    <ul class="">
+      <li>No official releases, yet.</li>
+    </ul>
+  </p>
+
   <h2>Introduction</h2>
   <p>
     Die compiles JavaScript templates into functions that can be
-    evaluated for rendering. Templates are usefule for rendering
+    evaluated for rendering. Templates are useful for rendering
     complicated bits of HTML from JSON data sources. Template
     functions can interpolate variables, using <tt>&lt;%= &hellip;
     %&gt;</tt>, as well as execute arbitrary JavaScript code,
     with <tt>&lt;% &hellip; %&gt;</tt>. If you wish to interpolate a
     value, and have it be HTML-escaped, use <tt>&lt;%- &hellip;
-    %&gt;</tt>
+    %&gt;</tt>.
   </p>
 
   <p>
@@ -226,7 +244,7 @@ template();
 => "One two"
 </pre>
 
-  <h2><strike>One-offs</strike></h2>
+  <h2 class="incomplete">One-offs</h2>
   <p>
     If you're writing a one-off, you can pass
     the <b>data</b> object as the second parameter to <b>template</b>
@@ -242,7 +260,7 @@ Die.compile(list, {people : ['moe', 'curly', 'larry']});
 =&gt; "&lt;li&gt;moe&lt;/li&gt;&lt;li&gt;curly&lt;/li&gt;&lt;li&gt;larry&lt;/li&gt;"
 </pre>
 
-  <h2><strike>Variable Scope</strike></h2>
+  <h2 class="incomplete">Variable Scope</h2>
   <p>
     By default, <b>template</b> places the values from your data
     in the local scope via the <tt>with</tt> statement.  However,
@@ -256,7 +274,7 @@ Die.compile("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'data
 =&gt; "Using 'with': no"</pre>
 
 
-  <h2><strike>Precompilation</strike></h2>
+  <h2 class="incomplete">Precompilation</h2>
   <p>
     Precompiling your templates can be a big help when debugging
     errors you can't reproduce.  This is because precompiled
@@ -271,7 +289,7 @@ Die.compile("Using 'with': <%= data.answer %>", {answer: 'no'}, {variable: 'data
 &lt;/script&gt;</pre>
 
 
-  <h2><strike>Changing Delimiters</strike></h2>
+  <h2 class="incomplete">Changing Delimiters</h2>
   <p>
     If eRuby-style delimiters aren't your cup of tea, you can change
     Die's template settings to use different symbols to set off
@@ -295,7 +313,7 @@ var template = Die.compile("Hello {{ name }}!");
 template({name : "Mustache"});
 =&gt; "Hello Mustache!"</pre>
 
-  <h2>API</h2>
+  <h2 class="incomplete">API</h2>
   This section describes all the public methods Die exposes.
   <dl class="method">
     <dt>Die.compile(templateString, [name], [settings])</dt>
@@ -310,47 +328,56 @@ template({name : "Mustache"});
   <h2>Acknowledgments</h2>
   <p>
     Portions of this project and its documentations are derived from
-    other projects and their documentations.
+    other projects and their documentation.
   </p>
 
-  <p>
+  <div>
     <a href="http://underscorejs.org/"><b>Underscore.js</b></a>
     <small>
       Copyright (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.<br />
-      MIT LICENSE
+      <b>MIT LICENSE</b><br />
 
-      Permission is hereby granted, free of charge, to any person
-      obtaining a copy of this software and associated documentation
-      files (the "Software"), to deal in the Software without
-      restriction, including without limitation the rights to use,
-      copy, modify, merge, publish, distribute, sublicense, and/or
-      sell copies of the Software, and to permit persons to whom the
-      Software is furnished to do so, subject to the following
-      conditions:
+      <p>
+        Permission is hereby granted, free of charge, to any person
+        obtaining a copy of this software and associated documentation
+        files (the "Software"), to deal in the Software without
+        restriction, including without limitation the rights to use,
+        copy, modify, merge, publish, distribute, sublicense, and/or
+        sell copies of the Software, and to permit persons to whom the
+        Software is furnished to do so, subject to the following
+        conditions:
+      </p>
 
-      The above copyright notice and this permission notice shall be
-      included in all copies or substantial portions of the Software.
+      <p>
+        The above copyright notice and this permission notice shall be
+        included in all copies or substantial portions of the
+        Software.
+      </p>
 
-      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-      OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-      HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-      WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-      OTHER DEALINGS IN THE SOFTWARE.
+      <p>
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+        KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+        WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+        PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+        COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+      </p>
     </small>
-  </p>
+  </div>
 
-  <p>
+  <div>
     <a href="http://jinja.pocoo.org/"><b>Jinja2</b></a>
     <small>
       Copyright (c) 2009 by the Jinja Team, Some rights reserved.<br />
-      BSD LICENSE
+      <b>BSD LICENSE</b><br />
 
-      Redistribution and use in source and binary forms, with or
-      without modification, are permitted provided that the following
-      conditions are met:
+      <p>
+        Redistribution and use in source and binary forms, with or
+        without modification, are permitted provided that the
+        following conditions are met:
+      </p>
 
       <ul>
         <li>
@@ -371,21 +398,23 @@ template({name : "Mustache"});
         </li>
       </ul>
 
-      THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-      CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-      INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-      MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-      DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-      CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-      SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-      LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
-      USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-      AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-      LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-      IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-      THE POSSIBILITY OF SUCH DAMAGE.
+      <p>
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+        CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+        INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+        MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+        CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+        SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+        LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+        USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+        AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+        LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+        IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+        THE POSSIBILITY OF SUCH DAMAGE.
+      </p>
     </small>
-  </p>
+  </div>
 
 <script src="vendor/google-code-prettify/prettify.js"></script>
 <script>
