@@ -174,6 +174,19 @@ $(document).ready(function() {
     equal(template(),
           "a3onebc3twode3threef",
           "content outside of block in child template should be ignored");
+
+    Die.compile('<% block("b1") %><% end("b1") %>' +
+                '<% block("b2") %><% end("b2") %>' +
+                '<% block("b3") %><% end("b3") %>', 'base');
+    Die.compile('<% extends("base") %>' +
+                '<% block("b1") %><%= one %><% end("b1") %>', 'base1');
+    Die.compile('<% extends("base1") %>' +
+                '<% block("b2") %><%= two %><% end("b2") %>', 'base2');
+    var template = Die.compile('<% extends("base2") %>' +
+                               '<% block("b3") %><%= three %><% end("b3") %>');
+    equal(template({one: '111', two: '222', three: '333'}),
+          "111222333",
+          "interpolating values in an inheritance chain");
   });
 
   // nested blocks

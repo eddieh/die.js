@@ -375,9 +375,9 @@
 
         _source +=
           sup ? "__p+=" + _super(extCounter) :
-          blk ? ("function __" + blk + cur +"() {\n" +
-                "var t__,__p='';") :
-          end ? ("return __p;}\n" +
+          blk ? ("function __" + blk + cur +"() {with(obj || {}){\n" +
+                "var __t,__p='';") :
+          end ? ("}return __p;}\n" +
                  "__" + end + "$entry=!__" + end +"$entry?__" + end + cur +":__" + end + "$entry;\n" +
                  "__p+=" + extCounter + "==1?__" + end + "$entry():'';") : '';
 
