@@ -1,33 +1,42 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Die Test Suite</title>
-  <link href="../vendor/qunit.css" rel="stylesheet" />
-</head>
-<body>
-  <div id="qunit"></div>
-  <div id="qunit-fixture">
-    <div id="map-test">
-      <div id="id1"></div>
-      <div id="id2"></div>
+  <head>
+    <title>Die Test Suite</title>
+    <link href="../vendor/qunit.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+      <div id="map-test">
+        <div id="id1"></div>
+        <div id="id2"></div>
+      </div>
     </div>
-  </div>
-  <br>
+    <br>
 
-  <script type="text/html" id="template">
+    <script type="text/html" id="template">
     <%
     // a comment
-    if (data) { data += 12345; }; %>
+      if (data) { data += 12345; }; %>
     <li><%= data %></li>
-  </script>
+    </script>
 
-  <script src="../vendor/jquery.js"></script>
-  <script src="../vendor/qunit.js"></script>
-  <!-- <script src="vendor/jslitmus.js"></script> -->
-  <script src="../die.js"></script>
+    <!-- <script src="../vendor/jquery.js"></script> -->
+    <script>
+      function ready(fn) {
+          if (document.readyState != 'loading')
+              fn()
+          else
+              document.addEventListener('DOMContentLoaded', fn)
+      }
+    </script>
 
-  <script src="basic.js"></script>
-  <script src="inheritance.js"></script>
+    <script src="../vendor/qunit.js"></script>
+    <!-- <script src="vendor/jslitmus.js"></script> -->
+    <script src="../die.js"></script>
 
-</body>
+    <script src="basic.js"></script>
+    <script src="inheritance.js"></script>
+
+  </body>
 </html>

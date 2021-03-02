@@ -1,6 +1,6 @@
-$(document).ready(function() {
+ready(function() {
 
-  module("Inheritance", {
+  QUnit.module("Inheritance", {
 
     setup: function() {
     },
@@ -10,48 +10,48 @@ $(document).ready(function() {
 
   });
 
-  test("Simple Inheritance", function () {
+  QUnit.test("Simple Inheritance", function (assert) {
     Die.compile('<% block("content") %><% end("content") %>', 'base.html');
     var extTemplate = Die.compile('<% extends("base.html") %><% block("content") %>Hello<% end("content") %>');
     var result = extTemplate();
-    equal(result, "Hello", 'inheritance with trivial content block');
+    assert.equal(result, "Hello", 'inheritance with trivial content block');
 
     Die.compile('Hello <% block("content") %><% end("content") %>,', 'base.html');
     var extTemplate2 = Die.compile('<% extends("base.html") %><% block("content") %>Eddie<% end("content") %>');
     var result2 = extTemplate2();
-    equal(result2, "Hello Eddie,", 'inheritance with content in base template');
+    assert.equal(result2, "Hello Eddie,", 'inheritance with content in base template');
     Die.compile('Block <% block("b1") %><% end("b1") %> and block ' +
                 '<% block("b2") %><% end("b2") %>.', 'base.html');
     var multipleBlocks = Die.compile('<% extends("base.html") %>' +
                                      '<% block("b1") %>One<% end("b1") %>' +
                                      '<% block("b2") %>Two<% end("b2") %>');
     var result3 = multipleBlocks();
-    equal(result3, "Block One and block Two.", 'multiple blocks');
+    assert.equal(result3, "Block One and block Two.", 'multiple blocks');
   });
 
-  test("Super Blocks", function () {
+  QUnit.test("Super Blocks", function (assert) {
     Die.compile('<% block("b") %>Super <% end("b") %>', 'base.html');
     var superBlock = Die.compile('<% extends("base.html") %>' +
       '<% block("b") %><% super() %>block.<% end("b") %>');
     var result = superBlock();
-    equal(result, "Super block.", "simple super block");
+    assert.equal(result, "Super block.", "simple super block");
 
     Die.compile('a<% block("b") %>c<% end("b") %>e', 'base.html');
     var superBlock2 = Die.compile('<% extends("base.html") %>' +
       '<% block("b") %>b<% super() %>d<% end("b") %>');
     var result2 = superBlock2();
-    equal(result2, "abcde", "super block with surrounding text");
+    assert.equal(result2, "abcde", "super block with surrounding text");
   });
 
-  test("Overriding blocks", function () {
+  QUnit.test("Overriding blocks", function (assert) {
     Die.compile('<% block("b1") %>One<% end("b1") %> ' +
                 '<% block("b2") %><% end("b2") %>', 'base');
     var template = Die.compile('<% extends("base") %>' +
                                '<% block("b2") %>two<% end("b2") %>');
-    equal(template(), "One two", "child template doesn't override block in parent template");
+    assert.equal(template(), "One two", "child template doesn't override block in parent template");
   });
 
-  test("Inheritance chains", function () {
+  QUnit.test("Inheritance chains", function (assert) {
     Die.compile('<% block("b1") %><% end("b1") %>' +
                 '<% block("b2") %><% end("b2") %>' +
                 '<% block("b3") %><% end("b3") %>', 'base');
@@ -61,7 +61,7 @@ $(document).ready(function() {
                 '<% block("b2") %> two <% end("b2") %>', 'base2');
     var template = Die.compile('<% extends("base2") %>' +
                                '<% block("b3") %>three<% end("b3") %>');
-    equal(template(), "one two three", "simple inheritance chain");
+    assert.equal(template(), "one two three", "simple inheritance chain");
 
     Die.compile('<% block("b1") %><% end("b1") %>' +
                 '<% block("b3") %><% end("b3") %>', 'base');
@@ -71,7 +71,7 @@ $(document).ready(function() {
                 '<% block("b2") %> two <% end("b2") %>', 'base2');
     var template = Die.compile('<% extends("base2") %>' +
                                '<% block("b3") %>three<% end("b3") %>');
-    equal(template(),
+    assert.equal(template(),
           "onethree",
           "block not defined in first base is ignored");
 
@@ -91,7 +91,7 @@ $(document).ready(function() {
                                '<% block("b2") %> 3two <% end("b2") %>' +
                                '<% block("b3") %>3three<% end("b3") %>',
                                'base3');
-    equal(template(),
+    assert.equal(template(),
           "3one 3two 3three",
           "template takes content from last extension in chain to declare block");
 
@@ -111,7 +111,7 @@ $(document).ready(function() {
                                '<% block("b2") %> 3two <% end("b2") %>' +
                                '<% block("b3") %>3three<% end("b3") %>',
                                'base3');
-    equal(template(),
+    assert.equal(template(),
           "3one 3two 3three",
           "template takes content from last extension in chain to declare block and some child doesn't override a block");
 
@@ -131,7 +131,7 @@ $(document).ready(function() {
                                '<% block("b2") %><% super() %>3two <% end("b2") %>' +
                                '<% block("b3") %>3three<% end("b3") %>',
                                'base3');
-    equal(template(),
+    assert.equal(template(),
           "3one a 1two 2two 3two 3three",
           "super blocks and inheritance chains");
 
@@ -151,7 +151,7 @@ $(document).ready(function() {
                                '<% block("b2") %>3two<% end("b2") %>' +
                                '<% block("b3") %>3three<% end("b3") %>',
                                'base3');
-    equal(template(),
+    assert.equal(template(),
           "a3onebc3twode3threef",
           "content outside of block of root template is preserved");
 
@@ -171,7 +171,7 @@ $(document).ready(function() {
                                '<% block("b2") %>3two<% end("b2") %>' +
                                'AA<% block("b3") %>3three<% end("b3") %>GN',
                                'base3');
-    equal(template(),
+    assert.equal(template(),
           "a3onebc3twode3threef",
           "content outside of block in child template should be ignored");
 
@@ -184,21 +184,21 @@ $(document).ready(function() {
                 '<% block("b2") %><%= two %><% end("b2") %>', 'base2');
     var template = Die.compile('<% extends("base2") %>' +
                                '<% block("b3") %><%= three %><% end("b3") %>');
-    equal(template({one: '111', two: '222', three: '333'}),
+    assert.equal(template({one: '111', two: '222', three: '333'}),
           "111222333",
           "interpolating values in an inheritance chain");
   });
 
   // nested blocks
-  test("Nested blocks", function () {
+  QUnit.test("Nested blocks", function (assert) {
     Die.compile('a<% block("b1") %>b<% block("n1") %>Y<% end("n1") %>c<% end("b1") %>d', 'base');
     var template = Die.compile('<% extends("base") %>' +
                                '<% block("n1") %>X<% end("n1") %>' +
                                '<% block("b1") %><% super() %><% end("b1") %>');
-    equal(template(), "abXcd", "simple nested block");
+    assert.equal(template(), "abXcd", "simple nested block");
   });
 
-  test("Real world test", function () {
+  QUnit.test("Real world test", function (assert) {
     Die.compile(
         '<html>\n' +
         '<head>\n' +
@@ -235,7 +235,7 @@ $(document).ready(function() {
         '      Welcome on my awesome homepage.\n' +
         '    </p>\n' +
         '<% end("content") %>');
-    equal(template(),
+    assert.equal(template(),
         '<html>\n' +
         '<head>\n' +
         '    \n' +
