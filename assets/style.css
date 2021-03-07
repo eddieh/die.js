@@ -1,8 +1,8 @@
 body {
     margin: 60px;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 16px;
+    line-height: 1;
     color: #333;
     background-color: white;
 }
@@ -22,14 +22,14 @@ p { margin: 0 0 9px }
 
 tt {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 13px;
+    font-size: 16px;
     color: #2679B1;
 }
 code,
 pre {
     padding: 0 3px 2px;
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 12px;
+    font-size: 16px;
     color: #333333;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -45,7 +45,7 @@ pre {
     display: block;
     padding: 8.5px;
     margin: 0 0 9px;
-    font-size: 12.025px;
+    font-size: 16px;
     line-height: 18px;
     word-break: break-all;
     word-wrap: break-word;
