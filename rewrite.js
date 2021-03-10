@@ -48,19 +48,46 @@ var Template = (function () {
         return Template.templates[tmpl]
     }
 
+    function beginBlock(blockname, bodies) {
+        let body = bodies[0]
+        if (body === undefined)
+            return ''
+        let beginMatch = body.match(RegExp(`<%\\s*block\\s*\\(\\s*${blockname}\\s*\\)\\s*%>`))
+        let begin = beginMatch.index + beginMatch[0].length
+        let endMatch = body.match(RegExp(`<%\\s*end\\s*\\(\\s*${blockname}\\s*\\)\\s*%>`))
+        let end = endMatch.index
+        return body.substring(begin, end)
+    }
+
+    function endBlock(block) {
+    }
+
     var specialForms = {
         env: /(env)\([\s\S]*\)/g,
         include: /include\(([\s\S]+?)\)/g,
+        block: /block\(([\s\S]+?)\)/g,
+        end: /end\(([\s\S]+?)\)/g,
     }
 
     var specialMatcher = RegExp([
         specialForms.env.source,
-        specialForms.include.source
+        specialForms.include.source,
+        specialForms.block.source,
+        specialForms.block.source,
     ].join('|') + '|$', 'g')
 
     function compile(body, depth) {
         let idx = 0
         let _body = ""
+        let bodies = []
+
+        if (body === undefined)
+            return _body
+
+        if (Array.isArray(body)) {
+            bodies = body
+            body = bodies[0]
+        }
 
         if (depth === undefined)
             depth = 0
@@ -95,7 +122,7 @@ var Template = (function () {
                 let _special = ""
                 let specialIdx = 0
                 let matchedSpecial = false
-                special.replace(specialMatcher, function(m, e, i, o) {
+                special.replace(specialMatcher, function(m, e, i, bb, be, o) {
                     if (i) {
                         _special += `;${__return()} += `
                         _special += `${__func()}.include(${i}).apply(this, arguments)`
@@ -103,6 +130,11 @@ var Template = (function () {
                     } else if (e) {
                         _special += `;${__return()} += `
                         _special += `${__func()}.env.apply(this, arguments)`
+                        matchedSpecial = true
+                    } else if (bb) {
+                        _special += "{\n"
+                        _special += compile(beginBlock(bb, bodies.slice(1)), depth + 1)
+                        _special += "\n}\n"
                         matchedSpecial = true
                     }
                     specialIdx = o + m.length
@@ -129,7 +161,8 @@ var Template = (function () {
             return m
         })
         _body += "\n"
-        _body += "\nreturn __$r0\n"
+        if (!depth)
+            _body += "\nreturn __$r0\n"
 
         return _body
     }
@@ -201,11 +234,11 @@ console.log(tmpl4({
 var tmpl5 = new Template(`<html>
 <head>
 <title><%= @site.title %></title>
-<% block('head') %><% end('head') %>
+<% block('head') %><link href="first-head"><% end('head') %>
 </head>
 <body>
 <% include('header') %>
-<% block('body') %><% end('body') %>
+<% block('body') %><p>First body.</p><% end('body') %>
 </body>
 </html>`)
 
@@ -218,4 +251,4 @@ var tmpl6 = new Template(`
 <link rel="stylesheet" href="style.css">
 <% end('head') %>`)
 
-//var tmpl7 = new Template([tmpl5.body, tmpl6.body])
+var tmpl7 = new Template([tmpl5.body, tmpl6.body])
