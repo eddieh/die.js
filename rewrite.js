@@ -1,10 +1,4 @@
-/*
- * // give us a function that can be applied to a scope
- * var template = new Template(body)
- *
- * // invoke the function with arg as scope
- * template(arg)
- */
+/* embec.js */
 
 var Template = (function () {
     const DEBUG_COMPILE = true
@@ -172,8 +166,6 @@ var Template = (function () {
     }
 
     class Template extends Function {
-        static templates = {}
-        static builtins = {}
         constructor(name, body) {
             if (body === undefined) {
                 body = name;
@@ -189,11 +181,12 @@ var Template = (function () {
         }
     }
 
+    Template.templates = {}
+    Template.builtins = {}
     Template.builtins.put = function(a) { return a ? '' + a : '' }
     Template.builtins.escape = function() { return '' }
     Template.builtins.env = env
     Template.builtins.include = include
-
     return Template
 }).call(this)
 
