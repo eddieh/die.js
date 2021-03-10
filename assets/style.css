@@ -35,6 +35,10 @@ h2 span {
     color: #3cc;
 }
 
+section {
+    border-bottom: 2px solid #DDD;
+}
+
 .row {
     display: flex;
 }

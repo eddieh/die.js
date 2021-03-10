@@ -34,32 +34,59 @@
   <div class="row">
     <div class="">
       <h2>Tags</h2>
-      <p></p>
+      <p>Embec tags are where you tell the template compiler to stop
+      copying and to start doing some processing. All tags start
+      with <tt>&lt;%</tt> and end with <tt>%&gt;</tt>.</p>
+    </div>
+    <div class="">
+      <h3>Description</h3>
+      <p>Embec has several tags.</p>
+      <dl>
+        <dt><tt>&lt;% %&gt;</tt></dt>
+        <dd>Statement tag</dd>
+        <dt><tt>&lt;%= %&gt;</tt></dt>
+        <dd>Interpolate tag</dd>
+        <dt><tt>&lt;%# %&gt;</tt></dt>
+        <dd>Comment tag</dd>
+      </dl>
     </div>
   </div>
 
   <div class="row">
-    <div class="">
-      <h3>Description</h3>
-      <p>Embec has several ERB/APS/PHP style tags.</p>
-    </div>
 
     <div class="">
       <h3>Example</h3>
-<pre class="prettyprint linenums">
-<% evaluate() %>
-<%= interpolate() %>
-</pre>
+<script id="tag-example" type="x/embec">
+<% for (let item of [10, 20, 30]) { %>
+<p><%= item %></p>
+<% } %>
+</script>
+<pre id="tag-display" class="prettyprint linenums"></pre>
     </div>
 
     <div class="">
       <h3>Output</h3>
+<pre id="tag-output"></pre>
     </div>
+
   </div>
 </section>
 
 <script src="rewrite.js"></script>
 <script src="vendor/google-code-prettify/prettify.js"></script>
-<script>window.prettyPrint && prettyPrint()</script>
+<script>
+var examples = document.querySelectorAll('[id$="-example"]')
+for (let example of examples) {
+    let name = example.id.replace('-example', '')
+    let body = example.textContent
+    let display = document.getElementById(`${name}-display`)
+    display.innerText = body.trim()
+    let tmpl = new Template(body)
+    let output = document.getElementById(`${name}-output`)
+    output.innerText = tmpl()
+}
+
+window.prettyPrint && prettyPrint()
+</script>
 </body>
 </html>
