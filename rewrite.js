@@ -59,7 +59,8 @@ var Template = (function () {
         return body.substring(begin, end)
     }
 
-    function endBlock(block) {
+    function endBlock(block, depth) {
+        return '\n__$r' + (depth - 1) + ' += __$r' + depth
     }
 
     var specialForms = {
@@ -73,7 +74,7 @@ var Template = (function () {
         specialForms.env.source,
         specialForms.include.source,
         specialForms.block.source,
-        specialForms.block.source,
+        specialForms.end.source,
     ].join('|') + '|$', 'g')
 
     function compile(body, depth) {
@@ -134,6 +135,9 @@ var Template = (function () {
                     } else if (bb) {
                         _special += "{\n"
                         _special += compile(beginBlock(bb, bodies.slice(1)), depth + 1)
+                        matchedSpecial = true
+                    } else if (be) {
+                        _special += endBlock(be, depth + 1)
                         _special += "\n}\n"
                         matchedSpecial = true
                     }
@@ -242,7 +246,6 @@ var tmpl5 = new Template(`<html>
 </body>
 </html>`)
 
-
 var tmpl6 = new Template(`
 <% block('body') %>
 <p>Body content.</p>
@@ -252,3 +255,7 @@ var tmpl6 = new Template(`
 <% end('head') %>`)
 
 var tmpl7 = new Template([tmpl5.body, tmpl6.body])
+console.log(tmpl7({
+    site: { title: 'My Blog' },
+    page: { title: 'First Post!' }
+}))
