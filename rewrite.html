@@ -19,16 +19,16 @@
 <section>
   <h2>Intro</h2>
   <p>Embec is dumb and probably isn't what you're looking for. It's a
-  template engine with no frills, no gulps, webpacks, Babel, YAML,
-  package.json—it's just one small file and no dependencies. It either
-  runs in your environment, or it doesn't.</p>
+  template engine with no frills—it's just one small file and no
+  dependencies. It either runs in your environment, or it doesn't.</p>
   <p>What can it do? All the normal templating stuff: interpolate,
   flow control, includes, and blocks.</p>
   <p>What it will never do? File IO, impose a stucture or a style on
-  your project.</p>
-  <p>Don't use Embec! It isn't what you're looking for. Don't you want
-  to use React/JSX? That way you can write <tt>&lt;GarbageComponent
-  attr="yuck"&gt;</tt> like is '96 and SGML is all the rage?</p>
+  your project, be packaged for NPM, touch the DOM or use any JS
+  feature restricted to a browser.</p>
+  <p>Don't use Embec! It isn't what you're looking for. I made it to
+  embed in an app I'm working on. Maybe it should be called
+  embembec.js. 🤷‍♂️</p>
 </section>
 
 <section>
@@ -219,7 +219,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </footer>
 
 <script src="rewrite.js"></script>
-<!-- <script src="vendor/google-code-prettify/prettify.js"></script> -->
 <script>
 var examples = document.querySelectorAll('[id$="-example"]')
 for (let example of examples) {
@@ -232,7 +231,6 @@ for (let example of examples) {
     let args = window[`${name}_args`]
     output.innerText = tmpl(args)
 }
-//window.prettyPrint && prettyPrint()
 </script>
 </body>
 </html>
