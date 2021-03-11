@@ -1,5 +1,5 @@
 body {
-    margin: 60px;
+    margin: 3em;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 150%;
     line-height: 1.4;
@@ -7,36 +7,31 @@ body {
     background-color: #EFEFEF;
 }
 
-h1 {
-    margin: 60px 0 10px;
+h1,h2,h3,h4,h5,h6 {
     font-family: 'AvenirNextCondensed-UltraLight',
-                 'Avenir Next Condensed Ultra Light',
-                 'Avenir Next Condensed',
-                 Helvetica,
-                 Arial,
-                 sans-serif;
-    font-size: 96px;
+        'Avenir Next Condensed Ultra Light',
+        'Avenir Next Condensed',
+        Helvetica,
+        Arial,
+        sans-serif;
     font-weight: 100;
+}
+
+h1 {
+    margin: .8em 0 .2em;
+    font-size: 460%;
     line-height: 1.5;
     letter-spacing: -.05em;
-    border-bottom: 2px solid #BBB;
-}
-h2, h3, h4, h5, h6 {
-    font-family: 'AvenirNextCondensed-UltraLight',
-                 'Avenir Next Condensed Ultra Light',
-                 'Avenir Next Condensed',
-                 Helvetica,
-                 Arial,
-                 sans-serif;
-    font-weight: 100;
+    border-bottom: 3px solid #BBB;
 }
 h2 span {
-    font-weight: 100;
     color: #3cc;
 }
 
 section {
+    padding: 2em 0;
     border-bottom: 2px solid #DDD;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 
 .row {
@@ -50,53 +45,55 @@ section {
     margin-left: 0;
 }
 
-p { margin: 0 0 9px }
-
-tt {
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+tt, pre, code {
+    font-family: DejaVu Sans Mono,
+        Menlo,
+        Monaco,
+        Consolas,
+        Courier New,
+        monospace;
+}
+tt, code {
     font-size: 90%;
     line-height: 1.4;
-    padding: 2px;
+    padding: .15em;
     color: #2679B1;
     background-color: #E1E1E1;
 }
-code,
-pre {
-    padding: 0 3px 2px;
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    color: #333333;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-}
 code {
-    padding: 2px 4px;
     color: #d14;
-    background-color: #f7f7f9;
-    border: 1px solid #e1e1e8;
 }
 pre {
-    display: block;
-    padding: 8.5px;
-    margin: 0 0 9px;
-    font-size: 16px;
-    line-height: 18px;
+    padding: .8em;
+    margin: 0 0 .5em;
+    font-size: 70%;
+    line-height: 1.3em;
     word-break: break-all;
     word-wrap: break-word;
     white-space: pre;
     white-space: pre-wrap;
+    color: #333;
     background-color: #f5f5f5;
     border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(0, 0, 0, 0.15);
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
+}
+pre.no-style {
+    padding:0;
+    margin:0;
+    background-color: revert;
+    border: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
 }
 
 dt {
     margin-top: .5em;
 }
 
-dl.method dt {
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+.copy {
+    font-size: 60%;
 }
