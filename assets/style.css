@@ -93,6 +93,10 @@ pre {
     border-radius: 4px;
 }
 
+dt {
+    margin-top: .5em;
+}
+
 dl.method dt {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }

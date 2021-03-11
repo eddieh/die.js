@@ -19,8 +19,9 @@
 <section>
   <h2>Intro</h2>
   <p>Embec is dumb and probably isn't what you're looking for. It's a
-  template engine with no frills, no gulps, webpacks, Jakes, YAML,
-  package.json—it's just one small file and no dependencies.</p>
+  template engine with no frills, no gulps, webpacks, Babel, YAML,
+  package.json—it's just one small file and no dependencies. It either
+  runs in your environment or it doesn't.</p>
   <p>What can it do? All the normal templating stuff: interpolate,
   flow control, includes, and blocks.</p>
   <p>What it will never do? File IO, impose a stucture or a style on
@@ -109,6 +110,60 @@
   </div>
 </section>
 
+<section>
+  <div class="row">
+    <div class="">
+      <h2>Environment</h2>
+      <p>The environment is the universe of things that can be
+      referenced from the current template. This includes the argument
+      object. The contents of the argument object are accessed through
+      the <tt>@</tt> symbol.</p>
+      <p>If you want to dump the environment place <tt>&lt;% env()
+      %&gt;</tt> somewhere in your template.</p>
+    </div>
+    <div class="">
+      <h3>Using the argument object</h3>
+      <p>Given an argument object <tt>arg</tt></p>
+<pre
+>var arg = {
+  a: 1,
+  b: 2,
+  c: [10, 20]
+}</pre>
+      <p>and a template function <tt>t()</tt> called with the argument
+      object <tt>t(arg)</tt></p>
+      <dl>
+        <dt><tt>@.a</tt></dt>
+        <dd>evaluates to <tt>1</tt></dd>
+
+        <dt><tt>@.b</tt></dt>
+        <dd>evaluates to <tt>2</tt></dd>
+
+        <dt><tt>@.c[0]</tt></dt>
+        <dd>evaluates to <tt>10</tt></dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <div class="">
+      <h3>Example</h3>
+<script id="env-example" type="x/embec"
+><% env() %></script>
+<script id="env-arguments"
+>var env_args = { a: 1, b: 2, c: [10, 20] }</script>
+<pre id="env-display" class=""></pre>
+    </div>
+
+    <div class="">
+      <h3>Output</h3>
+<pre id="env-output"></pre>
+    </div>
+
+  </div>
+</section>
+
 <script src="rewrite.js"></script>
 <script src="vendor/google-code-prettify/prettify.js"></script>
 <script>
@@ -120,7 +175,8 @@ for (let example of examples) {
     display.innerText = body.trim()
     let tmpl = new Template(body)
     let output = document.getElementById(`${name}-output`)
-    output.innerText = tmpl()
+    let args = window[`${name}_args`]
+    output.innerText = tmpl(args)
 }
 //window.prettyPrint && prettyPrint()
 </script>

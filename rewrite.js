@@ -35,7 +35,11 @@ var Template = (function () {
     }
 
     function env() {
-        return '@: ' + JSON.stringify(arguments[0], null, 4)
+        return '@ ' + JSON.stringify(arguments[0], null, 4)
+            + '\nbuiltins ' + JSON.stringify(
+                Object.keys(Template.builtins), null, 4)
+            + '\ntemplates ' + JSON.stringify(
+                Object.keys(Template.templates), null, 4)
     }
 
     function include(tmpl) {
@@ -165,11 +169,12 @@ var Template = (function () {
         return _body
     }
 
+    var anonCount = 0
     class Template extends Function {
         constructor(name, body) {
             if (body === undefined) {
                 body = name;
-                name = undefined
+                name = 'anonymous' + anonCount++
             }
             let _body = compile(body)
             if (DEBUG_COMPILE)
